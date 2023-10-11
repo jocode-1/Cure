@@ -2,8 +2,8 @@
 A full functional health management system web Application 
 
 # Table of Contents
-Introduction
-Features
+- Introduction
+- Features
 
 # Introduction
 The Health Management System (HMS) is a comprehensive software solution designed to manage healthcare operations and patient information for hospitals and healthcare facilities across Nigeria. This system streamlines patient management, electronic health records (EHR), appointment scheduling, prescription management, billing, and more. It ensures efficient healthcare service delivery while prioritizing data security and compliance with healthcare regulations.
