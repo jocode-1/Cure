@@ -1,0 +1,13 @@
+{
+    "name": "jwt/loans",
+    "description": "loan notification api",
+    "type": "project",
+    "require": {
+        "rbdwllr/reallysimplejwt": "^4.0.3"
+    },
+    "authors": [{
+        "name": "Temidayo Omotayo",
+        "email": "omotayotemi47@gmail.com"
+    }],
+    "minimum-stability": "alpha"
+}
