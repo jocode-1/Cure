@@ -7,7 +7,7 @@ include("header.php");
 		<!-- Page Content -->
 		<div id="content">
 			<!-- Top Navigation -->
-			<nav class="navbar navbar-default">
+			<!-- <nav class="navbar navbar-default">
 				<div class="container-fluid">
 					<div class="responsive-logo">
 						<a href="index.html"><img src="images/logo-dark.png" class="logo" alt="logo"></a>
@@ -77,7 +77,7 @@ include("header.php");
 					</ul>
 				
 				</div>
-			</nav>
+			</nav> -->
 			<!-- /Top Navigation -->
 			<!-- Breadcrumb -->
 			<!-- Page Title -->

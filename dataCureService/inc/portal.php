@@ -18,7 +18,7 @@ $conn = $database->getConnection();
 class PortalUtility
 {
 
-    public function create_merchant($conn, $hospital_id, $hospital_name, $hospital_email, $hospital_password, $hospital_address)
+    public function create_hospital($conn, $hospital_id, $hospital_name, $hospital_email, $hospital_password, $hospital_address)
     {
 
         $status = array();
@@ -134,10 +134,6 @@ class PortalUtility
             $token = Token::create($userId, $secret, $expiration, $issuer);
             //echo $token;
 
-            // $this->getLoginTime($conn, $staff_array['staff_email']);
-
-            // $currentLoginTime = date('Y-m-d H:i:s');8
-
             // Update the database with the current login time
             $this->getLoginTime($conn, $staff_array['staff_code']);
             $status =  json_encode(array("responseCode" => "00", "message" => "success", "hospital_id" => $staff_array['hospital_id'], "hospital_name" => $staff_array['hospital_name'], "staff_name" => $staff_array['staff_name'], "staff_code" => $staff_array['staff_code'], "staff_email" => $staff_array['staff_email'], "password_status" => $staff_array['password_change'], "tokenType" => "Bearer", "expiresIn" => "3600", "accessToken" => $token, "timestamp" => date('d-M-Y H:i:s')));
@@ -183,7 +179,7 @@ class PortalUtility
         error_log($log_msg, 3, $log_path);
     }
 
-  public function fetchStaffProfile($conn, $hospital_id, $staff_code, $token)
+    public function fetchStaffProfile($conn, $hospital_id, $staff_code, $token)
     {
         $status = "";
         $json = array();
@@ -265,4 +261,79 @@ class PortalUtility
         $this->server_logs($status);
         return $status;
     }
+
+    public function createToken()
+    {
+        $uni = substr(str_shuffle(str_repeat("0123456789", 6)), 0, 6);
+
+        return $uni;
+    }
+
+public function sendSms($conn, $staff_phone, $token)
+    {
+        $curl = curl_init();
+        $data = array(
+            "api_key" => "TLWapUvKcsmxofaNTsKGgDyarC9wanWmNZr9WqfL1oRe50x9bVrVbupoQuaySw",
+            "message_type" => "NUMERIC",
+            "to" => "'.$staff_phone.'",
+            "from" => "Cure",
+            "channel" => "dnd",
+            "pin_attempts" => 3,
+            "pin_time_to_live" =>  1,
+            "pin_length" => 6,
+            "pin_placeholder" => "< 1234 >",
+            "message_text" => 'Your one time pass is "'.$token.'". Please, don\'t disclose this to anyone.',
+            "pin_type" => "NUMERIC"
+        );
+
+        $post_data = json_encode($data);
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.ng.termii.com/api/sms/otp/send",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $post_data,
+            CURLOPT_HTTPHEADER => array(
+                'Accept: application/json',
+                "Content-Type: application/json"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        echo $response;
+    }
+
+    public function verify_token($conn, $phone, $token)
+    {
+        $status = "";
+        $staff_array = $this->validateTokens($conn, $phone, $token);
+      //  var_dump($staff_array);
+        if (sizeof($staff_array) > 0) {
+            $status =  json_encode(array("responseCode" => "00", "message" => "success", "timestamp" => date('d-M-Y H:i:s')));
+        } else {
+            $status =  json_encode(array("responseCode" => "04", "message" => "invalidToken", "timestamp" => date('d-M-Y H:i:s')));
+        }
+        $this->server_logs($status);
+        return $status;
+    }
+
+    public function validateTokens($conn, $phone, $token)
+    {
+        $json = array();
+        $sql = "SELECT * FROM `tenants` WHERE `phone` = '$phone' AND `token` = '$token'";
+        $result = mysqli_query($conn, $sql);
+        $staff_array = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    
+        return $staff_array;
+    }
 }
+$portal = new PortalUtility();
+
+// echo $portal->sendSms();
